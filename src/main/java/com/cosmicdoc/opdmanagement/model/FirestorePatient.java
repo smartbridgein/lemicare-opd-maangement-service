@@ -29,6 +29,7 @@ public class FirestorePatient {
     private String emergencyContactName;
     private String emergencyContactNumber;
     private boolean isActive;
+    private String registrationDate; // Stored as String in ISO format (YYYY-MM-DD)
     
     /**
      * Creates a FirestorePatient from a standard Patient entity
@@ -58,6 +59,11 @@ public class FirestorePatient {
         firestorePatient.setEmergencyContactNumber(patient.getEmergencyContactNumber());
         firestorePatient.setActive(patient.isActive());
         
+        // Convert registrationDate LocalDate to String
+        if (patient.getRegistrationDate() != null) {
+            firestorePatient.setRegistrationDate(patient.getRegistrationDate().format(DATE_FORMATTER));
+        }
+        
         return firestorePatient;
     }
     
@@ -84,6 +90,11 @@ public class FirestorePatient {
         patient.setEmergencyContactName(this.emergencyContactName);
         patient.setEmergencyContactNumber(this.emergencyContactNumber);
         patient.setActive(this.isActive);
+        
+        // Convert registrationDate String to LocalDate
+        if (this.registrationDate != null && !this.registrationDate.isEmpty()) {
+            patient.setRegistrationDate(LocalDate.parse(this.registrationDate, DATE_FORMATTER));
+        }
         
         return patient;
     }

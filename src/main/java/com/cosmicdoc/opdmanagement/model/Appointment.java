@@ -28,6 +28,13 @@ public class Appointment {
     private String diagnosis;
     private String treatment;
     
+    // Token system fields
+    private Integer tokenNumber;
+    private String tokenStatus;  // WAITING, CURRENT, COMPLETED, SKIPPED
+    private String tokenTime;    // Time when token was assigned
+    private Integer tokenOrder;  // Order based on appointment time
+    private String patientName;  // For displaying patient name with token
+    
     @Data
     @NoArgsConstructor
     public static class GpsLocation {

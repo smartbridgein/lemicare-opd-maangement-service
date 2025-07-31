@@ -31,6 +31,16 @@ public class FirestoreAppointment {
     private Timestamp updatedAt;
     private String notes;
     private Timestamp date;
+    private String reason;
+    private String diagnosis;
+    private String treatment;
+    
+    // Token system fields
+    private Integer tokenNumber;
+    private String tokenStatus;  // WAITING, CURRENT, COMPLETED, SKIPPED
+    private String tokenTime;    // Time when token was assigned
+    private Integer tokenOrder;  // Order based on appointment time
+    private String patientName;  // For displaying patient name with token
     
     @Data
     @NoArgsConstructor
@@ -92,6 +102,16 @@ public class FirestoreAppointment {
         firestoreAppointment.setUpdatedAt(appointment.getUpdatedAt());
         firestoreAppointment.setNotes(appointment.getNotes());
         firestoreAppointment.setDate(appointment.getDate());
+        firestoreAppointment.setReason(appointment.getReason());
+        firestoreAppointment.setDiagnosis(appointment.getDiagnosis());
+        firestoreAppointment.setTreatment(appointment.getTreatment());
+        
+        // Token fields
+        firestoreAppointment.setTokenNumber(appointment.getTokenNumber());
+        firestoreAppointment.setTokenStatus(appointment.getTokenStatus());
+        firestoreAppointment.setTokenTime(appointment.getTokenTime());
+        firestoreAppointment.setTokenOrder(appointment.getTokenOrder());
+        firestoreAppointment.setPatientName(appointment.getPatientName());
         
         return firestoreAppointment;
     }
@@ -121,6 +141,16 @@ public class FirestoreAppointment {
         appointment.setUpdatedAt(this.updatedAt);
         appointment.setNotes(this.notes);
         appointment.setDate(this.date);
+        appointment.setReason(this.reason);
+        appointment.setDiagnosis(this.diagnosis);
+        appointment.setTreatment(this.treatment);
+        
+        // Token fields
+        appointment.setTokenNumber(this.tokenNumber);
+        appointment.setTokenStatus(this.tokenStatus);
+        appointment.setTokenTime(this.tokenTime);
+        appointment.setTokenOrder(this.tokenOrder);
+        appointment.setPatientName(this.patientName);
         
         return appointment;
     }

@@ -77,6 +77,32 @@ public class AppointmentService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+    
+    /**
+     * Check if a patient already has an appointment on a specific date
+     * @param patientId The patient ID to check
+     * @param appointmentDate The date to check for existing appointments
+     * @return true if patient already has an appointment on that date, false otherwise
+     */
+    public boolean hasAppointmentOnDate(String patientId, LocalDate appointmentDate) {
+        LocalDateTime startOfDay = appointmentDate.atStartOfDay();
+        LocalDateTime endOfDay = appointmentDate.atTime(23, 59, 59);
+        
+        List<Appointment> existingAppointments = appointmentRepository.findByUserId(patientId);
+        
+        return existingAppointments.stream()
+                .anyMatch(appointment -> {
+                    if (appointment.getAppointmentDate() == null) {
+                        return false;
+                    }
+                    
+                    LocalDateTime appointmentDateTime = appointment.getAppointmentDate().toDate()
+                            .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    
+                    return !appointmentDateTime.isBefore(startOfDay) && 
+                           !appointmentDateTime.isAfter(endOfDay);
+                });
+    }
 
     public List<AppointmentDTO> getAppointmentsForMonth(int year, int month) {
         YearMonth yearMonth = YearMonth.of(year, month);
@@ -362,6 +388,13 @@ public class AppointmentService {
             dto.setDoctorLongitude(appointment.getDoctorGpsLocation().getLongitude());
         }
         
+        // Map token fields
+        dto.setTokenNumber(appointment.getTokenNumber());
+        dto.setTokenStatus(appointment.getTokenStatus());
+        dto.setTokenTime(appointment.getTokenTime());
+        dto.setTokenOrder(appointment.getTokenOrder());
+        dto.setPatientName(appointment.getPatientName());
+        
         return dto;
     }
 
@@ -390,6 +423,13 @@ public class AppointmentService {
             doctorLocation.setLongitude(dto.getDoctorLongitude());
             appointment.setDoctorGpsLocation(doctorLocation);
         }
+        
+        // Map token fields
+        appointment.setTokenNumber(dto.getTokenNumber());
+        appointment.setTokenStatus(dto.getTokenStatus());
+        appointment.setTokenTime(dto.getTokenTime());
+        appointment.setTokenOrder(dto.getTokenOrder());
+        appointment.setPatientName(dto.getPatientName());
         
         return appointment;
     }

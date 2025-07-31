@@ -78,6 +78,19 @@ public class ReceiptController {
     }
 
     /**
+     * Get receipts by invoice ID
+     *
+     * @param invoiceId The invoice ID
+     * @return ResponseEntity with list of receipts for the invoice
+     */
+    @GetMapping("/invoice/{invoiceId}")
+    public ResponseEntity<ApiResponse<List<Receipt>>> getReceiptsByInvoiceId(@PathVariable String invoiceId) {
+        log.info("Received request to get receipts for invoice: {}", invoiceId);
+        List<Receipt> receipts = receiptService.getReceiptsByInvoiceId(invoiceId);
+        return ResponseEntity.ok(ApiResponse.success("Receipts retrieved successfully", receipts));
+    }
+
+    /**
      * Update an existing receipt
      *
      * @param id The receipt ID
@@ -107,5 +120,23 @@ public class ReceiptController {
         log.info("Received request to delete receipt with ID: {}", id);
         receiptService.deleteReceipt(id);
         return ResponseEntity.ok(ApiResponse.success("Receipt deleted successfully", null));
+    }
+
+    /**
+     * Fix invoice statuses for existing receipts
+     * This endpoint can be called to retroactively sync invoice statuses
+     *
+     * @return ResponseEntity with success message
+     */
+    @PostMapping("/fix-invoice-statuses")
+    public ResponseEntity<ApiResponse<String>> fixInvoiceStatuses() {
+        log.info("Received request to fix invoice statuses for existing receipts");
+        try {
+            receiptService.fixInvoiceStatusesForExistingReceipts();
+            return ResponseEntity.ok(ApiResponse.success("Invoice statuses fixed successfully", "All existing receipts have been processed and their corresponding invoices updated"));
+        } catch (Exception e) {
+            log.error("Error fixing invoice statuses: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(ApiResponse.error("Failed to fix invoice statuses: " + e.getMessage()));
+        }
     }
 }

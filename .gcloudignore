@@ -1,0 +1,27 @@
+# .gcloudignore - Controls what files are uploaded to Google Cloud Build
+# This file overrides .gitignore for Cloud Build uploads
+
+# Exclude common development files
+.git/
+.gradle/
+.idea/
+.vscode/
+*.log
+.DS_Store
+
+# Exclude source files that aren't needed for Docker build
+src/test/
+*.md
+!README.md
+
+# IMPORTANT: Include target/ directory so the JAR file is available for Docker build
+# (This overrides the target/ exclusion in .gitignore)
+!target/
+!target/*.jar
+
+# Exclude other build artifacts we don't need
+target/classes/
+target/test-classes/
+target/maven-archiver/
+target/maven-status/
+target/surefire-reports/

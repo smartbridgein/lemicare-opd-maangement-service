@@ -12,6 +12,7 @@ public interface ReceiptRepository {
     List<Receipt> findAll();
     Optional<Receipt> findById(String id);
     List<Receipt> findByPatientId(String patientId);
+    List<Receipt> findByInvoiceId(String invoiceId);
     void delete(String id);
     String generateReceiptId();
 }

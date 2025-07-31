@@ -31,6 +31,21 @@ public class InvoiceService {
      */
     public Invoice createInvoice(Invoice invoice) {
         log.info("Creating invoice for patient: {}", invoice.getPatientId());
+        
+        // Ensure timestamp fields are set if not already present
+        if (invoice.getTimestamp() == null) {
+            invoice.setTimestamp(java.time.LocalDateTime.now());
+        }
+        if (invoice.getCreatedTimestamp() == null) {
+            invoice.setCreatedTimestamp(java.time.LocalDateTime.now());
+        }
+        if (invoice.getDate() == null) {
+            invoice.setDate(java.time.LocalDate.now());
+        }
+        if (invoice.getCreatedDate() == null) {
+            invoice.setCreatedDate(java.time.LocalDate.now());
+        }
+        
         return invoiceRepository.save(invoice);
     }
 
@@ -52,7 +67,16 @@ public class InvoiceService {
      */
     public Optional<Invoice> getInvoiceById(String id) {
         log.info("Retrieving invoice with ID: {}", id);
-        return invoiceRepository.findById(id);
+        Optional<Invoice> invoiceOpt = invoiceRepository.findById(id);
+        
+        if (invoiceOpt.isPresent()) {
+            Invoice invoice = invoiceOpt.get();
+            // Fix balance tracking for existing invoices that don't have proper balance values
+            invoice = ensureBalanceFieldsAreCorrect(invoice);
+            return Optional.of(invoice);
+        }
+        
+        return invoiceOpt;
     }
 
     /**
@@ -97,5 +121,64 @@ public class InvoiceService {
     public void deleteInvoice(String id) {
         log.info("Deleting invoice with ID: {}", id);
         invoiceRepository.delete(id);
+    }
+
+    /**
+     * Ensure balance tracking fields are correct for existing invoices
+     * This fixes invoices created before balance tracking was implemented
+     *
+     * @param invoice The invoice to check and fix
+     * @return The invoice with corrected balance fields
+     */
+    private Invoice ensureBalanceFieldsAreCorrect(Invoice invoice) {
+        boolean needsUpdate = false;
+        
+        // Check if balance fields need initialization
+        if (invoice.getStatus() == null || invoice.getStatus().isEmpty()) {
+            invoice.setStatus("PENDING");
+            needsUpdate = true;
+        }
+        
+        // If balanceAmount is 0 but status is not PAID, it likely needs fixing
+        if (invoice.getBalanceAmount() == 0.0 && !"PAID".equals(invoice.getStatus())) {
+            double totalAmount = invoice.getAmount();
+            double paidAmount = invoice.getPaidAmount();
+            
+            // Calculate correct balance
+            double correctBalance = totalAmount - paidAmount;
+            
+            if (correctBalance > 0) {
+                invoice.setBalanceAmount(correctBalance);
+                needsUpdate = true;
+                log.info("Fixed balance for invoice {}: set balanceAmount to {} (total: {}, paid: {})", 
+                        invoice.getInvoiceId(), correctBalance, totalAmount, paidAmount);
+            }
+        }
+        
+        // Update status based on balance
+        if (invoice.getBalanceAmount() <= 0 && invoice.getPaidAmount() > 0) {
+            if (!"PAID".equals(invoice.getStatus())) {
+                invoice.setStatus("PAID");
+                needsUpdate = true;
+            }
+        } else if (invoice.getPaidAmount() > 0 && invoice.getBalanceAmount() > 0) {
+            if (!"PARTIAL".equals(invoice.getStatus())) {
+                invoice.setStatus("PARTIAL");
+                needsUpdate = true;
+            }
+        } else if (invoice.getPaidAmount() == 0) {
+            if (!"PENDING".equals(invoice.getStatus()) && !"UNPAID".equals(invoice.getStatus())) {
+                invoice.setStatus("PENDING");
+                needsUpdate = true;
+            }
+        }
+        
+        // Save the updated invoice if changes were made
+        if (needsUpdate) {
+            log.info("Updating invoice {} with corrected balance fields", invoice.getInvoiceId());
+            invoice = invoiceRepository.save(invoice);
+        }
+        
+        return invoice;
     }
 }

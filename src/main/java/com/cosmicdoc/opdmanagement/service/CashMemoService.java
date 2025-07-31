@@ -31,6 +31,21 @@ public class CashMemoService {
      */
     public CashMemo createCashMemo(CashMemo cashMemo) {
         log.info("Creating cash memo for patient: {}", cashMemo.getPatientId());
+        
+        // Ensure timestamp fields are set if not already present
+        if (cashMemo.getTimestamp() == null) {
+            cashMemo.setTimestamp(java.time.LocalDateTime.now());
+        }
+        if (cashMemo.getCreatedTimestamp() == null) {
+            cashMemo.setCreatedTimestamp(java.time.LocalDateTime.now());
+        }
+        if (cashMemo.getDate() == null) {
+            cashMemo.setDate(java.time.LocalDate.now());
+        }
+        if (cashMemo.getCreatedDate() == null) {
+            cashMemo.setCreatedDate(java.time.LocalDate.now());
+        }
+        
         return cashMemoRepository.save(cashMemo);
     }
 

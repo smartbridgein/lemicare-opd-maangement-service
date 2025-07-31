@@ -225,6 +225,7 @@ public class PatientService {
         dto.setMedicalHistory(patient.getMedicalHistory());
         dto.setEmergencyContactName(patient.getEmergencyContactName());
         dto.setEmergencyContactNumber(patient.getEmergencyContactNumber());
+        dto.setRegistrationDate(patient.getRegistrationDate());
         dto.setActive(patient.isActive());
         return dto;
     }
@@ -243,6 +244,7 @@ public class PatientService {
         patient.setMedicalHistory(dto.getMedicalHistory());
         patient.setEmergencyContactName(dto.getEmergencyContactName());
         patient.setEmergencyContactNumber(dto.getEmergencyContactNumber());
+        patient.setRegistrationDate(dto.getRegistrationDate());
         patient.setActive(dto.isActive());
         return patient;
     }

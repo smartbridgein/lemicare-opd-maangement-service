@@ -44,5 +44,8 @@ public class PatientDTO {
     @Pattern(regexp = "\\d{10,15}", message = "Emergency contact phone number must be between 10 and 15 digits")
     private String emergencyContactNumber;
     
+    // Registration date - can be provided or will default to current date
+    private LocalDate registrationDate;
+    
     private boolean isActive = true;
 }

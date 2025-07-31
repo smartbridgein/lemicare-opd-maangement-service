@@ -25,11 +25,13 @@ public class FirestoreCashMemo {
     private String patientId;
     private String patientName;
     private Timestamp date;
+    private Timestamp timestamp; // Full timestamp for sorting and detailed tracking
     private Double amount;
     private String createdBy;
     private String modeOfPayment;
     private String billId;
     private Timestamp createdDate;
+    private Timestamp createdTimestamp; // Full timestamp for creation tracking
     private String category;
     private String taxation;
     private String account;
@@ -64,10 +66,24 @@ public class FirestoreCashMemo {
             this.date = Timestamp.of(Date.from(cashMemo.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
         
+        // Map timestamp field (full datetime)
+        if (cashMemo.getTimestamp() != null) {
+            this.timestamp = Timestamp.of(Date.from(cashMemo.getTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
+        } else {
+            this.timestamp = Timestamp.now(); // Set current timestamp if not provided
+        }
+        
         if (cashMemo.getCreatedDate() != null) {
             this.createdDate = Timestamp.of(Date.from(cashMemo.getCreatedDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         } else {
             this.createdDate = Timestamp.now();
+        }
+        
+        // Map createdTimestamp field (full datetime)
+        if (cashMemo.getCreatedTimestamp() != null) {
+            this.createdTimestamp = Timestamp.of(Date.from(cashMemo.getCreatedTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
+        } else {
+            this.createdTimestamp = Timestamp.now(); // Set current timestamp if not provided
         }
         
         // Convert tax breakdown
@@ -108,8 +124,18 @@ public class FirestoreCashMemo {
             cashMemo.setDate(this.date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         }
         
+        // Map timestamp field back to LocalDateTime
+        if (this.timestamp != null) {
+            cashMemo.setTimestamp(this.timestamp.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        }
+        
         if (this.createdDate != null) {
             cashMemo.setCreatedDate(this.createdDate.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        }
+        
+        // Map createdTimestamp field back to LocalDateTime
+        if (this.createdTimestamp != null) {
+            cashMemo.setCreatedTimestamp(this.createdTimestamp.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         
         // Convert tax breakdown

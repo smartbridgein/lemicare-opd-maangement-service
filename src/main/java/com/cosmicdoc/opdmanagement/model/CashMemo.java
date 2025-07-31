@@ -36,6 +36,8 @@ public class CashMemo extends BillingItem {
         this.setCreatedBy(createdBy);
         this.setModeOfPayment(modeOfPayment);
         this.setCreatedDate(java.time.LocalDate.now());
+        this.setCreatedTimestamp(java.time.LocalDateTime.now());
         this.setDate(java.time.LocalDate.now());
+        this.setTimestamp(java.time.LocalDateTime.now());
     }
 }

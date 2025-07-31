@@ -22,7 +22,7 @@ public class AppointmentDTO {
     private String doctorId;
     
     @NotNull(message = "Appointment date/time is required")
-    @Future(message = "Appointment date must be in the future")
+    // @Future constraint removed to allow status changes after appointment time
     private LocalDateTime appointmentDateTime;
     
     private String status = "SCHEDULED"; // SCHEDULED, COMPLETED, CANCELLED, REASSIGNED
@@ -38,4 +38,13 @@ public class AppointmentDTO {
     private Double patientLongitude;
     private Double doctorLatitude;
     private Double doctorLongitude;
+    
+    // Token system fields
+    private Integer tokenNumber;
+    private String tokenStatus;  // WAITING, CURRENT, COMPLETED, SKIPPED
+    private String tokenTime;    // Time when token was assigned
+    private Integer tokenOrder;  // Order based on appointment time
+    
+    // Additional fields for token display
+    private String patientName;  // For displaying patient name with token
 }

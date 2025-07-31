@@ -127,6 +127,27 @@ public class ReceiptRepositoryImpl implements ReceiptRepository {
     }
 
     @Override
+    public List<Receipt> findByInvoiceId(String invoiceId) {
+        try {
+            Query query = firestore.collection(COLLECTION_NAME).whereEqualTo("invoiceId", invoiceId);
+            ApiFuture<QuerySnapshot> future = query.get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            
+            List<Receipt> result = new ArrayList<>();
+            for (DocumentSnapshot document : documents) {
+                FirestoreReceipt firestoreReceipt = document.toObject(FirestoreReceipt.class);
+                if (firestoreReceipt != null) {
+                    result.add(firestoreReceipt.toReceipt());
+                }
+            }
+            
+            return result;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Failed to retrieve receipts by invoice ID: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void delete(String id) {
         try {
             // First retrieve the receipt to get patient ID

@@ -23,6 +23,8 @@ public class FirestoreReceipt {
     private String createdBy;
     private String modeOfPayment;
     private String receiptId;
+    private String invoiceId;
+    private String status;
     private Timestamp createdDate;
     
     public FirestoreReceipt(Receipt receipt) {
@@ -33,6 +35,8 @@ public class FirestoreReceipt {
         this.createdBy = receipt.getCreatedBy();
         this.modeOfPayment = receipt.getModeOfPayment();
         this.receiptId = receipt.getReceiptId();
+        this.invoiceId = receipt.getInvoiceId();
+        this.status = receipt.getStatus();
         
         if (receipt.getDate() != null) {
             this.date = Timestamp.of(Date.from(receipt.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
@@ -54,6 +58,8 @@ public class FirestoreReceipt {
         receipt.setCreatedBy(this.createdBy);
         receipt.setModeOfPayment(this.modeOfPayment);
         receipt.setReceiptId(this.receiptId);
+        receipt.setInvoiceId(this.invoiceId);
+        receipt.setStatus(this.status);
         
         if (this.date != null) {
             receipt.setDate(this.date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
