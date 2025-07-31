@@ -34,3 +34,10 @@ build/
 
 ### Logs ###
 *.log
+
+### Google Cloud Service Account Files ###
+# Firebase and Google Cloud credentials - keep these secure!
+**/google-services*.json
+**/lemicare-*-v*.json
+**/*firebase-adminsdk*.json
+**/*service-account*.json
